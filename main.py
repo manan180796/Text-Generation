@@ -1,5 +1,6 @@
 import tensorflow as tf
 import utils
+from Language_Model import LanguageModel
 
 source_path = tf.keras.utils.get_file(
     fname="shakespeare.txt",
@@ -7,32 +8,23 @@ source_path = tf.keras.utils.get_file(
 )
 
 text = open(file=source_path, mode="rb").read().decode(encoding="utf-8")
-print(len(text))
 
-text_vectorizer = utils.Text_Vectorizer(text=text)
-
-text_vector = text_vectorizer.vectorize(text=text)
-
-sample_length = 100
-
-dataset = tf.data.Dataset.from_tensor_slices(text_vector)
+vocablury = utils.Vocablury(text=text)
 
 
-slices = dataset.batch(batch_size=sample_length+1, drop_remainder=True)
+language_model = LanguageModel(
+    vocablury=vocablury,
+    embedding_dim=256,
+    rnn_units=1024,
+    batch_size=1
+)
 
+# language_model.set_train_text(text=text, sample_length=100, buffer_size=10000)
+# language_model.train(epochs=40)
 
-def split_sequences(sequence):
-    input_text = sequence[:-1]
-    target_text = sequence[1:]
-    return input_text, target_text
+language_model.load_model()
 
+print(language_model.sample(init_phrase="Hey", length=1000))
 
-slices = slices.map(map_func=split_sequences)
-
-
-batch_size = 64
-buffer_size = 10000
-dataset = slices.shuffle(buffer_size=buffer_size).batch(
-    batch_size=batch_size, drop_remainder=True)
-
-print(dataset)
+# def loss(labels, logits):
+#     return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)

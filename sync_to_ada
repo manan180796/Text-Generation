@@ -1,0 +1,3 @@
+#!/bin/bash
+
+rsync -avzh --exclude "logs/" --exclude ".vscode/" --exclude "__pycache__/" --exclude "model/" /media/manan-sharma/DARKMATTER/data-science/Text-Generation/ ada:/home/manan.sharma/experiments/Text-Generation/
