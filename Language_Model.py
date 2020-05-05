@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow.keras.layers import Embedding, GRU, Dense
 from tensorflow.keras import Model
 from tensorflow import keras
+# import tensorflow_e
 import utils
 import datetime
 import os
@@ -33,16 +34,16 @@ class LanguageModel(object):
         self.model = tf.keras.Sequential([
             tf.keras.layers.Embedding(
                 vocab_size, embedding_dim, batch_input_shape=[batch_size, None]),
-            tf.keras.layers.GRU(rnn_units,
-                                return_sequences=True,
-                                stateful=True,
-                                recurrent_initializer="glorot_uniform"),
+            tf.keras.layers.LSTM(rnn_units,
+                                 return_sequences=True,
+                                 stateful=True,
+                                 recurrent_initializer="glorot_uniform"),
             tf.keras.layers.Dense(vocab_size)
         ])
 
     def set_train_text(self, text: str,
                        sample_length: int,
-                       buffer_size: int):
+                       buffer_size: int, train_test_per: float = 0.8):
         text_vector = self.text_vectorizer.vectorize(text=text)
 
         dataset = tf.data.Dataset.from_tensor_slices(text_vector)
